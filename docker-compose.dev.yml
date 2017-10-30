@@ -1,0 +1,27 @@
+version: '2'
+services:
+  app:
+    extends:
+      file: docker-compose.common.yml
+      service: app
+    volumes:
+      - .:/var/www/app
+    links:
+      - redis
+      - rabbitmq
+  nginx:
+    extends:
+      file: docker-compose.common.yml
+      service: nginx
+    links:
+      - app
+    volumes_from:
+      - app
+  redis:
+    extends:
+      file: docker-compose.common.yml
+      service: redis
+  rabbitmq:
+    extends:
+      file: docker-compose.common.yml
+      service: rabbitmq

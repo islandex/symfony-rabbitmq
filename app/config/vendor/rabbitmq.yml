@@ -1,0 +1,26 @@
+old_sound_rabbit_mq:
+  connections:
+    default:
+      host:     '%rabbitmq.host%'
+      port:     '%rabbitmq.port%'
+      user:     '%rabbitmq.user%'
+      password: '%rabbitmq.password%'
+      vhost:    '/'
+      lazy:     true
+  producers:
+    demo_queue:
+      connection: default
+      exchange_options:
+        name: 'app.demo.queue'
+        type: direct
+        durable: true
+        auto-delete: false
+  consumers:
+    app.demo.queue:
+      connection:       default
+      exchange_options: {name: 'app.demo.queue', type: direct}
+      queue_options:    {name: 'app.demo.queue'}
+      callback:         app.demo.consumer
+      idle_timeout:     900
+      idle_timeout_exit_code: 0
+      qos_options:      {prefetch_size: 0, prefetch_count: 16, global: false}

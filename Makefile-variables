@@ -1,0 +1,22 @@
+APP_ENV = $(shell awk -F= -v key="APP_ENV" '$$1==key {print $$2}' .env)
+
+# Use dev compose for dev env
+ifeq ($(APP_ENV),dev)
+  export COMPOSE_EXEC_ENV_OPTIONS =
+  export COMPOSE_FILE_CONSUMERS = -f docker-compose.consumers.dev.yml
+  export COMPOSE_FILE_OPTION = -f docker-compose.dev.yml
+else
+  export COMPOSE_EXEC_ENV_OPTIONS =
+  export COMPOSE_FILE_CONSUMERS = -f docker-compose.consumers.yml
+  export COMPOSE_FILE_OPTION = -f docker-compose.yml
+endif
+
+INTERACTIVE:=$(shell [ -t 0 ] && echo 1)
+
+ifdef INTERACTIVE
+  export COMPOSE_EXEC_INTERACTIVE_OPTIONS =
+else
+  export COMPOSE_EXEC_INTERACTIVE_OPTIONS = -T
+endif
+
+export COMPOSE_EXEC_OPTIONS = ${COMPOSE_EXEC_ENV_OPTIONS} ${COMPOSE_EXEC_INTERACTIVE_OPTIONS}

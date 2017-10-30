@@ -1,0 +1,42 @@
+version: '2'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: ./docker/${APP_ENV}/Dockerfile
+      args:
+        HOST_UID: ${HOST_UID}
+        APP_ENV: ${APP_ENV}
+    env_file: .env
+    restart: always
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-Nginx
+      args:
+        APP_ENV: ${APP_ENV}
+    ports:
+      - ${APP_PORT}:80
+    env_file: .env
+    restart: always
+  consumers:
+    build:
+      context: ./
+      dockerfile: ./docker/${APP_ENV}/Dockerfile
+      args:
+        HOST_UID: ${HOST_UID}
+        APP_ENV: ${APP_ENV}
+    env_file: .env
+    restart: always
+    command: /usr/bin/supervisord -c docker/common/supervisord/supervisord.conf
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - ${REDIS_HOST_PORT}:6379
+    env_file: .env
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - ${RABBITMQ_HOST_PORT}:5672
+      - ${RABBITMQ_UI_HOST_PORT}:15672
+    env_file: .env

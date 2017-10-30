@@ -1,0 +1,10 @@
+version: '2'
+services:
+  consumers:
+    extends:
+      file: docker-compose.common.yml
+      service: consumers
+    links:
+      - redis
+    volumes_from:
+      - app
